@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "145316338574",
+    "firebase_url": "https://ftm-dataset-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "ftm-dataset",
+    "storage_bucket": "ftm-dataset.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:145316338574:android:aa8cb87311d7fffa2ba2df",
+        "android_client_info": {
+          "package_name": "com.example.android.wifirttscan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "145316338574-t7rr4j767kcmrmgr6kb79vqtgl7r98vh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUkbHgdu7sTyqQzoRx1AHyPGFZ-rAclFY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "145316338574-t7rr4j767kcmrmgr6kb79vqtgl7r98vh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

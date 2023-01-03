@@ -38,14 +38,22 @@ public class LocationPermissionRequestActivity extends AppCompatActivity
 
     /* Id to identify Location permission request. */
     private static final int PERMISSION_REQUEST_FINE_LOCATION = 1;
+    private static final int PERMISSION_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+    private static final int PERMISSION_REQUEST_READ_EXTERNAL_STORAGE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         // If permissions granted, we start the main activity (shut this activity down).
-        if (ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
+
+        boolean x = ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED;
+        boolean y = ActivityCompat.checkSelfPermission(this, permission.WRITE_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+        boolean z = ActivityCompat.checkSelfPermission(this, permission.READ_EXTERNAL_STORAGE)
+                == PackageManager.PERMISSION_GRANTED;
+        if (x&&y&&z) {
             finish();
         }
 
@@ -58,7 +66,7 @@ public class LocationPermissionRequestActivity extends AppCompatActivity
         // On 23+ (M+) devices, fine location permission not granted. Request permission.
         ActivityCompat.requestPermissions(
                 this,
-                new String[] {Manifest.permission.ACCESS_FINE_LOCATION},
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.WRITE_EXTERNAL_STORAGE, permission.READ_EXTERNAL_STORAGE},
                 PERMISSION_REQUEST_FINE_LOCATION);
     }
 

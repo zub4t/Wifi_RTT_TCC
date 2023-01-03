@@ -60,6 +60,7 @@ import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
@@ -82,6 +83,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     static ArrayList<ScanResult> mAccessPointsSupporting80211mc = new ArrayList<>();
     static Map<String, DataExtra> mapExtraInformation = new TreeMap<>();
     static long nextID = 0;
+    static long nextIDFile = 0;
     static boolean canSave = true;
 
     private static final String TAG = "MainActivity";
@@ -98,6 +100,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     private RttRangingResultCallback mRttRangingResultCallback;
     private Button firebaseStart;
     private Button firebaseStop;
+    private Button info;
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabaseReference = mDatabase.getReference();
 
@@ -117,6 +120,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         mRecyclerView = findViewById(R.id.recycler_view);
         firebaseStart = findViewById(R.id.firebase_start);
         firebaseStop = findViewById(R.id.firebase_stop);
+        info = findViewById(R.id.info);
         firebaseStop.setEnabled(false);
         // Improve performance if you know that changes in content do not change the layout size
         // of the RecyclerView
@@ -126,7 +130,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
 
-
+        nextIDFile = this.getExternalFilesDir(null).listFiles().length - 1;
+        nextIDFile = nextID>=0?nextIDFile:0;
         if (mAccessPointsSupporting80211mc.size() == 0) {
             Log.d("FTM", " extras == null");
             mAccessPointsSupporting80211mc = new ArrayList<>();
@@ -156,6 +161,16 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
             @Override
             public void onClick(View view) {
                 canSave=false;
+                nextIDFile++;
+            }
+        });
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Info.class);
+                startActivity(intent);
+
+
             }
         });
         firebaseStart.setEnabled(mAccessPointsSupporting80211mc.size() > 0 && mapExtraInformation.size() == mAccessPointsSupporting80211mc.size());
@@ -197,8 +212,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     protected void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
-
         mLocationPermissionApproved = ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
+
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
@@ -226,7 +241,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
                 startRangingRequest(mAccessPointsSupporting80211mc);
                 return null;
             }
-        });
+        },this);
         canSave=true;
         firebaseStop.setEnabled(true);
         // Permission for fine location should already be granted via MainActivity (you can't get

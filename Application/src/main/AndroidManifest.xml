@@ -8,6 +8,9 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
 
     <application
         android:allowBackup="true"
@@ -20,6 +23,15 @@
             android:name=".SetDataForASoftAP"
             android:exported="false"
             android:label="@string/title_activity_set_data_for_asoft_ap"
+            android:theme="@style/CustomAppTheme.NoActionBar">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+        <activity
+            android:name=".Info"
+            android:exported="false"
+            android:label="info"
             android:theme="@style/CustomAppTheme.NoActionBar">
             <meta-data
                 android:name="android.app.lib_name"

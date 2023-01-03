@@ -1,6 +1,7 @@
 package com.example.android.wifirttscan;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.rtt.RangingRequest;
@@ -26,9 +27,10 @@ import java.util.concurrent.Callable;
 
 public class RttRangingResultCallback extends RangingResultCallback {
     Callable<Void> methodParam;
-
-    RttRangingResultCallback(Callable<Void> methodParam) {
+    Context ctx;
+    RttRangingResultCallback(Callable<Void> methodParam,Context ctx) {
         this.methodParam = methodParam;
+        this.ctx = ctx;
     }
 
     // Triggers additional RangingRequests with delay (mMillisecondsDelayBeforeNewRangingRequest).
@@ -39,7 +41,7 @@ public class RttRangingResultCallback extends RangingResultCallback {
     private int mNumberOfSuccessfulRangeRequests;
     private WifiRttManager mWifiRttManager;
 
-    private int mMillisecondsDelayBeforeNewRangingRequest;
+    private int mMillisecondsDelayBeforeNewRangingRequest=0;
 
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabaseReference = mDatabase.getReference();
@@ -70,7 +72,6 @@ public class RttRangingResultCallback extends RangingResultCallback {
     @Override
     public void onRangingResults(@NonNull List<RangingResult> list) {
         Log.d("FTM", "onRangingResults(): " + list);
-
         // Because we are only requesting RangingResult for one access point (not multiple
         // access points), this will only ever be one. (Use loops when requesting RangingResults
         // for multiple access points.)
@@ -79,8 +80,8 @@ public class RttRangingResultCallback extends RangingResultCallback {
                 break;
             }
 
-            if (rangingResult.getStatus() == RangingResult.STATUS_SUCCESS) {
-
+           if (rangingResult.getStatus() == RangingResult.STATUS_SUCCESS) {
+           // if (true) {
                 mNumberOfSuccessfulRangeRequests++;
                 float distance = (float) rangingResult.getDistanceMm() / 1000.0f;
                 String BSSID = rangingResult.getMacAddress().toString();
@@ -94,9 +95,13 @@ public class RttRangingResultCallback extends RangingResultCallback {
                         dataExtra.distance, dataExtra.xCoordinateV, dataExtra.yCoordinateV,
                         dataExtra.zCoordinateV, distanceStdDevM, rangingResult.getNumAttemptedMeasurements(),
                         rangingResult.getNumSuccessfulMeasurements(), rangingResult.getRangingTimestampMillis());
-                mDatabaseReference = mDatabase.getReference().child(String.valueOf(MainActivity.nextID));
+
+               // mDatabaseReference = mDatabase.getReference().child(String.valueOf(MainActivity.nextID));
                 final Map<String, Object> dataMap = new HashMap<String, Object>();
-                mDatabaseReference.setValue(dataRTT.toMap());
+               // mDatabaseReference.setValue(dataRTT.toMap());
+                MapCsv mapCsv = new MapCsv(dataMap);
+                Log.d("DATA","SALVANDO");
+                mapCsv.writeFileExternalStorage(ctx);
                 MainActivity.nextID++;
 
             }

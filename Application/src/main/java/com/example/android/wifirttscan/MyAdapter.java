@@ -15,7 +15,6 @@
  */
 package com.example.android.wifirttscan;
 
-import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.net.wifi.ScanResult;
 
@@ -61,7 +60,7 @@ public class MyAdapter extends RecyclerView.Adapter<ViewHolder> {
         public ViewHolderItem(View view) {
             super(view);
             view.setOnClickListener(this);
-            mSsidTextView = view.findViewById(R.id.ssid_text_view);
+            mSsidTextView = view.findViewById(R.id.file_name_text_view);
             mBssidTextView = view.findViewById(R.id.bssid_text_view);
 
         }

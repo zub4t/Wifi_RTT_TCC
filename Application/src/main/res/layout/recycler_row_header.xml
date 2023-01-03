@@ -31,7 +31,7 @@
         android:textAlignment="center"
         android:textSize="@dimen/recycler_row_header_text_size"
         android:text="@string/recycler_row_header_label_ssid"
-        android:id="@+id/ssid_text_view"/>
+        android:id="@+id/file_name_text_view"/>
 
     <TextView
         android:layout_width="0dp"

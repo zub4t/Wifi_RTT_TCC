@@ -14,7 +14,7 @@ This app contains two activities that will work together to get Wifi RTT measure
 
 In the figure bellow it is possible to see the look and feel for this activity.
 <p align='center'>
-<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/main/Screenshot_20221218-135643%5B1%5D.png' width='200'/>
+<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/master/Screenshot_20221218-135643%5B1%5D.png' width='200'/>
 </p>
 <h3>
 Scan Wifi
@@ -22,14 +22,14 @@ Scan Wifi
 When the Scan WiFi button is clicked, the app will search for all access points that support 802.11mc and list them. The image below demonstrates how the activity will appear.
 
 <p align='center'>
-<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/main/Screenshot_20221218-135652%5B1%5D.png' width='200'/>
+<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/master/Screenshot_20221218-135652%5B1%5D.png' width='200'/>
 </p>
 <h3>
 Adding more information
 </h3>
 There is some information that is not possible to infer from the app. Therefore, when clicking on one of the listed SSIDs, the application will focus on another activity. Here it is possible to define the real distance and X , Y , Z Coordinates. Once the user finishes to fulfill the form and click in the return button the application will bring the main activity again and the SSIDs that already have additional information will be displayed in red color text.
 <p align='center'>
-<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/main/Screenshot_20221218-135703%5B1%5D.png' width='200'/>
+<img src='https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/master/Screenshot_20221218-135703%5B1%5D.png' width='200'/>
 </p>
 <h3>
 Back to the main activity
@@ -37,7 +37,7 @@ Back to the main activity
 When the user has finished filling in all the additional information for all listed SSIDs, the application will allow the user to start building the RTT dataset
 <p align='center'>
 <img src='
-https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/main/Screenshot_20221218-135732%5B1%5D.png' width='200'/>
+https://raw.githubusercontent.com/zub4t/Wifi_RTT_TCC/master/Screenshot_20221218-135732%5B1%5D.png' width='200'/>
 </p>
 <h3>
 Realtime Database

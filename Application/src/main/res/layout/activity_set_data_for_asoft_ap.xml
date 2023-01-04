@@ -92,13 +92,6 @@
             android:layout_marginTop="40dp"
             android:text="SAVE" />
 
-        <Button
-            android:id="@+id/return_button"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Return" />
-
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

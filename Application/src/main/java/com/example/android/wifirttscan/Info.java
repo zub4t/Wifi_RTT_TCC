@@ -1,6 +1,7 @@
 package com.example.android.wifirttscan;
 
 import android.os.Bundle;
+import android.os.Environment;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -16,9 +17,10 @@ public class Info extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info);
+        File storageDir = Environment.getExternalStorageDirectory();
 
-        File dir = this.getExternalFilesDir(null);
-        File[] files = dir.listFiles();
+        File d = new File(storageDir, "/WiFiRTT/");
+        File[] files = d.listFiles();
         List<String> fileNames = new ArrayList<>();
         for (File file : files) {
             fileNames.add(file.getName());

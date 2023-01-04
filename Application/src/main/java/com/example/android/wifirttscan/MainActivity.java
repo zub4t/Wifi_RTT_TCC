@@ -25,7 +25,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.net.wifi.ScanResult;
 import android.net.wifi.WifiManager;
@@ -33,7 +32,6 @@ import android.net.wifi.rtt.RangingRequest;
 import android.net.wifi.rtt.WifiRttManager;
 import android.os.Bundle;
 
-import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +39,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutManager;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,19 +53,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.core.utilities.Tree;
-import com.google.gson.Gson;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -85,6 +73,11 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     static long nextID = 0;
     static long nextIDFile = 0;
     static boolean canSave = true;
+    static long time = 0;
+    static long timeB = 0;
+    static String currentFileName = "";
+
+    static WifiRttManager mWifiRttManager;
 
     private static final String TAG = "MainActivity";
     private boolean mLocationPermissionApproved = false;
@@ -93,21 +86,14 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
 
     private TextView mOutputTextView;
     private RecyclerView mRecyclerView;
-    private int mNumberOfRangeRequests;
 
     private MyAdapter mAdapter;
-    private WifiRttManager mWifiRttManager;
-    private RttRangingResultCallback mRttRangingResultCallback;
-    private Button firebaseStart;
-    private Button firebaseStop;
+    private Button next;
     private Button info;
-    private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
-    private DatabaseReference mDatabaseReference = mDatabase.getReference();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
 
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_main);
@@ -118,10 +104,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
 
         mOutputTextView = findViewById(R.id.access_point_summary_text_view);
         mRecyclerView = findViewById(R.id.recycler_view);
-        firebaseStart = findViewById(R.id.firebase_start);
-        firebaseStop = findViewById(R.id.firebase_stop);
+        next = findViewById(R.id.next);
         info = findViewById(R.id.info);
-        firebaseStop.setEnabled(false);
         // Improve performance if you know that changes in content do not change the layout size
         // of the RecyclerView
         mRecyclerView.setHasFixedSize(true);
@@ -129,9 +113,33 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         // use a linear layout manager
         LayoutManager layoutManager = new LinearLayoutManager(this);
         mRecyclerView.setLayoutManager(layoutManager);
+        File storageDir = Environment.getExternalStorageDirectory();
 
-        nextIDFile = this.getExternalFilesDir(null).listFiles().length - 1;
-        nextIDFile = nextID>=0?nextIDFile:0;
+        File d = new File(storageDir, "/WiFiRTT/");
+        nextIDFile = d.listFiles().length - 1;
+        nextIDFile = nextID >= 0 ? nextIDFile : 0;
+
+
+        next.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), PerformRangingRequest.class);
+                startActivity(intent);
+            }
+        });
+        info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getApplicationContext(), Info.class);
+                startActivity(intent);
+            }
+        });
+
+        setData();
+
+    }
+
+    public void setData() {
         if (mAccessPointsSupporting80211mc.size() == 0) {
             Log.d("FTM", " extras == null");
             mAccessPointsSupporting80211mc = new ArrayList<>();
@@ -148,50 +156,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
             mRecyclerView.setAdapter(mAdapter);
 
         }
+        next.setEnabled(mAccessPointsSupporting80211mc.size() > 0 && mapExtraInformation.size() == mAccessPointsSupporting80211mc.size());
 
-        firebaseStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("RTT", "Initiating RTT");
-
-                startRangingRequest(mAccessPointsSupporting80211mc);
-            }
-        });
-        firebaseStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                canSave=false;
-                nextIDFile++;
-            }
-        });
-        info.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), Info.class);
-                startActivity(intent);
-
-
-            }
-        });
-        firebaseStart.setEnabled(mAccessPointsSupporting80211mc.size() > 0 && mapExtraInformation.size() == mAccessPointsSupporting80211mc.size());
-        mDatabaseReference.getRoot().get().addOnCompleteListener(new OnCompleteListener<DataSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DataSnapshot> task) {
-                if (!task.isSuccessful()) {
-                    Log.e("firebase", "Error getting data", task.getException());
-                } else {
-                    if (task.getResult().getValue() != null) try {
-                        List<Map<String, Object>> listMap = (List<Map<String, Object>>) task.getResult().getValue();
-                        Log.d("firebase", listMap.size() + "");
-                        nextID = listMap.size();
-                        listMap = null;
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            }
-        });
     }
 
     @Override
@@ -212,8 +178,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     protected void onResume() {
         Log.d(TAG, "onResume()");
         super.onResume();
+        setData();
         mLocationPermissionApproved = ActivityCompat.checkSelfPermission(this, permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED;
-
         registerReceiver(mWifiScanReceiver, new IntentFilter(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION));
     }
 
@@ -232,36 +198,35 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         }
     }
 
-    private void startRangingRequest(List<ScanResult> scanResultList) {
+    /*
+        private void startRangingRequest(List<ScanResult> scanResultList) {
 
-        mWifiRttManager = (WifiRttManager) getSystemService(Context.WIFI_RTT_RANGING_SERVICE);
+            mWifiRttManager = (WifiRttManager) getSystemService(Context.WIFI_RTT_RANGING_SERVICE);
 
-        mRttRangingResultCallback = new RttRangingResultCallback(new Callable<Void>() {
-            public Void call() {
-                startRangingRequest(mAccessPointsSupporting80211mc);
-                return null;
+            mRttRangingResultCallback = new RttRangingResultCallback(new Callable<Void>() {
+                public Void call() {
+                    startRangingRequest(mAccessPointsSupporting80211mc);
+                    return null;
+                }
+            },this);
+            canSave=true;
+            // Permission for fine location should already be granted via MainActivity (you can't get
+            // to this class unless you already have permission. If they get to this class, then disable
+            // fine location permission, we kick them back to main activity.
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                finish();
             }
-        },this);
-        canSave=true;
-        firebaseStop.setEnabled(true);
-        // Permission for fine location should already be granted via MainActivity (you can't get
-        // to this class unless you already have permission. If they get to this class, then disable
-        // fine location permission, we kick them back to main activity.
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            finish();
+            Log.d("RTT", "StartingRagingRequest N:" + mNumberOfRangeRequests);
+            mNumberOfRangeRequests++;
+
+            RangingRequest rangingRequest = new RangingRequest.Builder().addAccessPoints(scanResultList).build();
+
+            mWifiRttManager.startRanging(rangingRequest, getApplication().getMainExecutor(), mRttRangingResultCallback);
         }
-        Log.d("RTT", "StartingRagingRequest N:" + mNumberOfRangeRequests);
-        mNumberOfRangeRequests++;
-
-        RangingRequest rangingRequest = new RangingRequest.Builder().addAccessPoints(scanResultList).build();
-
-        mWifiRttManager.startRanging(rangingRequest, getApplication().getMainExecutor(), mRttRangingResultCallback);
-    }
-
+    */
     @Override
     public void onScanResultItemClick(ScanResult scanResult) {
         Log.d(TAG, "onScanResultItmeClick(): ssid: " + scanResult.SSID);
-
         Intent intent = new Intent(this, SetDataForASoftAP.class);
         intent.putExtra("RESULT", scanResult);
         startActivity(intent);
@@ -272,7 +237,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         if (mLocationPermissionApproved) {
             logToUi(getString(R.string.retrieving_access_points));
             mWifiManager.startScan();
-
         } else {
             // On 23+ (M+) devices, fine location permission not granted. Request permission.
             Intent startIntent = new Intent(this, LocationPermissionRequestActivity.class);

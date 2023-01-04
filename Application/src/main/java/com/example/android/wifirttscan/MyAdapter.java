@@ -21,6 +21,7 @@ import android.net.wifi.ScanResult;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.ViewHolder;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -118,7 +119,7 @@ public class MyAdapter extends RecyclerView.Adapter<ViewHolder> {
 
             viewHolderItem.mSsidTextView.setText(currentScanResult.SSID);
             viewHolderItem.mBssidTextView.setText(currentScanResult.BSSID);
-
+            Log.d("NOW",MainActivity.mapExtraInformation.toString());
             if (MainActivity.mapExtraInformation.get(currentScanResult.BSSID) != null) {
                 viewHolderItem.mSsidTextView.setTextColor(Color.parseColor("#FF0000"));
                 viewHolderItem.mBssidTextView.setTextColor(Color.parseColor("#FF0000"));

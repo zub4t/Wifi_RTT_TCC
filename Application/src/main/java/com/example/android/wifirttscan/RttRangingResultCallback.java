@@ -41,7 +41,6 @@ public class RttRangingResultCallback extends RangingResultCallback {
     private int mNumberOfSuccessfulRangeRequests;
     private WifiRttManager mWifiRttManager;
 
-    private int mMillisecondsDelayBeforeNewRangingRequest=0;
 
     private FirebaseDatabase mDatabase = FirebaseDatabase.getInstance();
     private DatabaseReference mDatabaseReference = mDatabase.getReference();
@@ -60,18 +59,16 @@ public class RttRangingResultCallback extends RangingResultCallback {
                         }
                     }
                 },
-                mMillisecondsDelayBeforeNewRangingRequest);
+                MainActivity.timeB);
     }
 
     @Override
     public void onRangingFailure(int code) {
-        Log.d("FTM", "onRangingFailure() code: " + code);
         queueNextRangingRequest();
     }
 
     @Override
     public void onRangingResults(@NonNull List<RangingResult> list) {
-        Log.d("FTM", "onRangingResults(): " + list);
         // Because we are only requesting RangingResult for one access point (not multiple
         // access points), this will only ever be one. (Use loops when requesting RangingResults
         // for multiple access points.)
@@ -97,11 +94,13 @@ public class RttRangingResultCallback extends RangingResultCallback {
                         rangingResult.getNumSuccessfulMeasurements(), rangingResult.getRangingTimestampMillis());
 
                // mDatabaseReference = mDatabase.getReference().child(String.valueOf(MainActivity.nextID));
-                final Map<String, Object> dataMap = new HashMap<String, Object>();
-               // mDatabaseReference.setValue(dataRTT.toMap());
+                final Map<String, Object> dataMap = dataRTT.toMap();
+               // mDatabaseReference.setValue();
                 MapCsv mapCsv = new MapCsv(dataMap);
                 Log.d("DATA","SALVANDO");
-                mapCsv.writeFileExternalStorage(ctx);
+               Log.d("DATA NOW",dataMap.size()+"");
+
+               mapCsv.writeFileExternalStorage(ctx);
                 MainActivity.nextID++;
 
             }

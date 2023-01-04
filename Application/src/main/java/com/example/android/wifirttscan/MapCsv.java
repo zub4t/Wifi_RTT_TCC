@@ -26,8 +26,12 @@ public class MapCsv {
     }
 
     public String toCsv() {
+
+
         StringBuilder sb = new StringBuilder();
         for (Map.Entry<String, Object> entry : map.entrySet()) {
+            Log.d("DATA",entry.getKey());
+
             sb.append(entry.getKey()).append(",").append(entry.getValue()).append("\n");
         }
         return sb.toString();
@@ -84,11 +88,12 @@ public class MapCsv {
             return;
         }
         //Create a new file that points to the root directory, with the given name:
-        File file = new File(ctx.getExternalFilesDir(null), String.format("data_%s_%s.csv", formattedDateTime, MainActivity.nextIDFile));
+        File file = new File(Environment.getExternalStorageDirectory(), String.format("/WiFiRTT/data_%s_%s.csv", formattedDateTime, MainActivity.nextIDFile));
+        MainActivity.currentFileName = file.getAbsolutePath();
         //This point and below is responsible for the write operation
         FileOutputStream outputStream = null;
         try {
-            Log.d("FILE", file.getAbsolutePath());
+
             if(!file.exists()) {
                 if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
                    return;
@@ -99,7 +104,7 @@ public class MapCsv {
             //to append or create new file if one exists
             outputStream = new FileOutputStream(file, true);
 
-            outputStream.write(this.toCsv().getBytes());
+            outputStream.write(toCsv().getBytes());
             outputStream.flush();
             outputStream.close();
         } catch (Exception e) {

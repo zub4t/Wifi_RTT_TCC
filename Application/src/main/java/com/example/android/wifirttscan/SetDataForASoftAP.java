@@ -32,7 +32,6 @@ public class SetDataForASoftAP extends AppCompatActivity {
     private EditText zCoordinate;
     private TextView softAP;
     private Button save;
-    private Button returnB;
 
 
     private ScanResult result;
@@ -50,7 +49,6 @@ public class SetDataForASoftAP extends AppCompatActivity {
         zCoordinate = findViewById(R.id.z_coordinate);
         softAP = findViewById(R.id.soft_ap_mac);
         save = findViewById(R.id.save_button);
-        returnB = findViewById(R.id.return_button);
         softAP.setText(result.BSSID);
 
 
@@ -65,15 +63,7 @@ public class SetDataForASoftAP extends AppCompatActivity {
         }
 
 
-        returnB.setEnabled(false);
-        returnB.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                startActivity(intent);
 
-            }
-        });
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -87,7 +77,6 @@ public class SetDataForASoftAP extends AppCompatActivity {
 
                     MainActivity.mapExtraInformation.put(result.BSSID, dataExtra);
                     Toast.makeText(getApplicationContext(), "SoftAP information defined", Toast.LENGTH_SHORT).show();
-                    returnB.setEnabled(true);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

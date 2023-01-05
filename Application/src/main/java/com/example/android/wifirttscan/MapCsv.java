@@ -29,11 +29,20 @@ public class MapCsv {
 
 
         StringBuilder sb = new StringBuilder();
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            Log.d("DATA",entry.getKey());
 
-            sb.append(entry.getKey()).append(",").append(entry.getValue()).append("\n");
+        if (!MainActivity.currentFileHasHeader) {
+            sb.append(MainActivity.currentFileDescription + "\n\n");
+            MainActivity.currentFileDescription="";
+            MainActivity.currentFileHasHeader = true;
+            map.keySet().stream().forEach(k -> sb.append(k + ","));
+            sb.deleteCharAt(sb.length() - 1);
+            sb.append("\n");
         }
+
+        map.values().stream().forEach(v -> sb.append(v + ","));
+        sb.deleteCharAt(sb.length() - 1);
+        sb.append("\n");
+
         return sb.toString();
     }
 
@@ -94,9 +103,9 @@ public class MapCsv {
         FileOutputStream outputStream = null;
         try {
 
-            if(!file.exists()) {
+            if (!file.exists()) {
                 if (ActivityCompat.checkSelfPermission(ctx, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-                   return;
+                    return;
                 }
                 file.createNewFile();
             }

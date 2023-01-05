@@ -43,7 +43,6 @@ public class SetDataForASoftAP extends AppCompatActivity {
         setContentView(R.layout.activity_set_data_for_asoft_ap);
         result = (ScanResult) extras.get("RESULT");
 
-        trueDistance = findViewById(R.id.true_distance);
         xCoordinate = findViewById(R.id.x_coordinate);
         yCoordinate = findViewById(R.id.y_coordinate);
         zCoordinate = findViewById(R.id.z_coordinate);
@@ -54,7 +53,6 @@ public class SetDataForASoftAP extends AppCompatActivity {
 
         DataExtra dataExtraTargetAP = MainActivity.mapExtraInformation.get(result.BSSID);
         if (dataExtraTargetAP != null) {
-            trueDistance.setText(dataExtraTargetAP.distance + "");
             xCoordinate.setText(dataExtraTargetAP.xCoordinateV + "");
             yCoordinate.setText(dataExtraTargetAP.yCoordinateV + "");
             zCoordinate.setText(dataExtraTargetAP.zCoordinateV + "");
@@ -68,12 +66,11 @@ public class SetDataForASoftAP extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    float distance = Float.parseFloat(trueDistance.getText().toString());
                     float xCoordinateV = Float.parseFloat(xCoordinate.getText().toString());
                     float yCoordinateV = Float.parseFloat(yCoordinate.getText().toString());
                     float zCoordinateV = Float.parseFloat(zCoordinate.getText().toString());
 
-                    DataExtra dataExtra = new DataExtra(distance, xCoordinateV, yCoordinateV, zCoordinateV,result.SSID);
+                    DataExtra dataExtra = new DataExtra( xCoordinateV, yCoordinateV, zCoordinateV,result.SSID);
 
                     MainActivity.mapExtraInformation.put(result.BSSID, dataExtra);
                     Toast.makeText(getApplicationContext(), "SoftAP information defined", Toast.LENGTH_SHORT).show();

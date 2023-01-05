@@ -28,7 +28,8 @@ import java.util.concurrent.Callable;
 public class RttRangingResultCallback extends RangingResultCallback {
     Callable<Void> methodParam;
     Context ctx;
-    RttRangingResultCallback(Callable<Void> methodParam,Context ctx) {
+
+    RttRangingResultCallback(Callable<Void> methodParam, Context ctx) {
         this.methodParam = methodParam;
         this.ctx = ctx;
     }
@@ -77,8 +78,8 @@ public class RttRangingResultCallback extends RangingResultCallback {
                 break;
             }
 
-           if (rangingResult.getStatus() == RangingResult.STATUS_SUCCESS) {
-           // if (true) {
+            if (rangingResult.getStatus() == RangingResult.STATUS_SUCCESS) {
+                // if (true) {
                 mNumberOfSuccessfulRangeRequests++;
                 float distance = (float) rangingResult.getDistanceMm() / 1000.0f;
                 String BSSID = rangingResult.getMacAddress().toString();
@@ -87,20 +88,22 @@ public class RttRangingResultCallback extends RangingResultCallback {
                 DataExtra dataExtra = MainActivity.mapExtraInformation.get(BSSID);
                 String SSID = dataExtra.SSID;
                 float distanceStdDevM = (float) rangingResult.getDistanceStdDevMm() / 1000.0f;
-
                 DataRTT dataRTT = new DataRTT(BSSID, SSID, distance, RSSI, timestamp,
-                        dataExtra.distance, dataExtra.xCoordinateV, dataExtra.yCoordinateV,
-                        dataExtra.zCoordinateV, distanceStdDevM, rangingResult.getNumAttemptedMeasurements(),
-                        rangingResult.getNumSuccessfulMeasurements(), rangingResult.getRangingTimestampMillis());
+                        dataExtra.xCoordinateV,
+                        dataExtra.yCoordinateV,
+                        dataExtra.zCoordinateV,
+                        distanceStdDevM,
+                        rangingResult.getNumAttemptedMeasurements(),
+                        rangingResult.getNumSuccessfulMeasurements(),
+                        rangingResult.getRangingTimestampMillis());
 
-               // mDatabaseReference = mDatabase.getReference().child(String.valueOf(MainActivity.nextID));
+                // mDatabaseReference = mDatabase.getReference().child(String.valueOf(MainActivity.nextID));
                 final Map<String, Object> dataMap = dataRTT.toMap();
-               // mDatabaseReference.setValue();
+                // mDatabaseReference.setValue();
                 MapCsv mapCsv = new MapCsv(dataMap);
-                Log.d("DATA","SALVANDO");
-               Log.d("DATA NOW",dataMap.size()+"");
 
-               mapCsv.writeFileExternalStorage(ctx);
+
+                mapCsv.writeFileExternalStorage(ctx);
                 MainActivity.nextID++;
 
             }

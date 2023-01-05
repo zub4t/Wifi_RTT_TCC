@@ -80,6 +80,7 @@ public class PerformRangingRequest extends AppCompatActivity {
                     }
                 }
                 canDoRttRequest = false;
+
                 handler.post(new Runnable() {
                     public void run() {
                         information.setText("Done!!\nfile:"+MainActivity.currentFileName);

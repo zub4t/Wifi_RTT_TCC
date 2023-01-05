@@ -54,12 +54,21 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Displays list of Access Points enabled with WifiRTT (to check distance). Requests location
@@ -76,6 +85,8 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
     static long time = 0;
     static long timeB = 0;
     static String currentFileName = "";
+    static String currentFileDescription = "";
+    static boolean currentFileHasHeader = false;
 
     static WifiRttManager mWifiRttManager;
 
@@ -98,9 +109,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_main);
 
-        boolean rttCapable = (getApplication().getPackageManager().hasSystemFeature(PackageManager.FEATURE_WIFI_RTT));
-        String messageFormat = String.format("This device is RTT capable ? %s.", rttCapable);
-        Toast.makeText(getApplicationContext(), messageFormat, Toast.LENGTH_LONG).show();
 
         mOutputTextView = findViewById(R.id.access_point_summary_text_view);
         mRecyclerView = findViewById(R.id.recycler_view);
@@ -123,6 +131,10 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         next.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                currentFileName = "";
+                currentFileHasHeader = false;
+                mAccessPointsSupporting80211mc = (ArrayList<ScanResult>) mAccessPointsSupporting80211mc.stream()
+                        .filter(ap -> mapExtraInformation.get(ap.BSSID) != null).collect(Collectors.toList());
                 Intent intent = new Intent(getApplicationContext(), PerformRangingRequest.class);
                 startActivity(intent);
             }
@@ -139,7 +151,60 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
 
     }
 
+    public void findConfigurationFile() {
+
+        File file = new File(Environment.getExternalStorageDirectory(), "/WiFiRTT/configuration.json");
+
+        if (file.exists()) {
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            try {
+                FileInputStream fis = new FileInputStream(file);
+                byte[] data = new byte[(int) file.length()];
+                fis.read(data);
+                fis.close();
+                String str = new String(data, StandardCharsets.UTF_8);
+
+
+                JSONArray array = new JSONArray(str);
+
+
+                IntStream.range(0, array.length()).forEach(i -> {
+                    JSONObject json = null;
+                    try {
+                        json = array.getJSONObject(i);
+                        String BSSID = json.getString("BSSID");
+                        String SSID = json.getString("SSID");
+
+                        float xCoordinateV = (float) json.getDouble("xCoordinate");
+                        float yCoordinateV = (float) json.getDouble("yCoordinate");
+                        float zCoordinateV = (float) json.getDouble("zCoordinate");
+                        DataExtra dataExtra = new DataExtra(xCoordinateV, yCoordinateV, zCoordinateV, SSID);
+                        if (MainActivity.mapExtraInformation.get(BSSID) == null)
+                            MainActivity.mapExtraInformation.put(BSSID, dataExtra);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
+                });
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            // do something with the CSV data
+        } else {
+            Toast.makeText(this, "There is no configuration file", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
     public void setData() {
+        findConfigurationFile();
         if (mAccessPointsSupporting80211mc.size() == 0) {
             Log.d("FTM", " extras == null");
             mAccessPointsSupporting80211mc = new ArrayList<>();
@@ -156,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
             mRecyclerView.setAdapter(mAdapter);
 
         }
-        next.setEnabled(mAccessPointsSupporting80211mc.size() > 0 && mapExtraInformation.size() == mAccessPointsSupporting80211mc.size());
+        //  next.setEnabled(mAccessPointsSupporting80211mc.size() > 0 && mapExtraInformation.size() == mAccessPointsSupporting80211mc.size());
 
     }
 
@@ -284,7 +349,6 @@ public class MainActivity extends AppCompatActivity implements ScanResultClickLi
         public void onReceive(Context context, Intent intent) {
             Log.d("RTT", "onReceive Called from broadCast");
 
-            Toast.makeText(context, "started search for FTM responders", Toast.LENGTH_LONG).show();
             List<ScanResult> scanResults = mWifiManager.getScanResults();
 
             if (scanResults != null) {

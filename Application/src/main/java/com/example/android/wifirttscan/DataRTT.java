@@ -12,7 +12,6 @@ public class DataRTT  implements Serializable {
     private float distance;
     private String RSSI;
     private long time;
-    private float trueDistance;
     private float xCoordinate;
     private float yCoordinate;
     private float zCoordinate;
@@ -21,13 +20,12 @@ public class DataRTT  implements Serializable {
     private int numSuccessfulMeasurements;
     private long rangingTimestampMillis;
 
-    public DataRTT(String BSSID, String SSID, float distance,String RSSI, long time, float trueDistance, float xCoordinate, float yCoordinate, float zCoordinate, float distanceStdDevM, int numAttemptedMeasurements, int numSuccessfulMeasurements, long rangingTimestampMillis) {
+    public DataRTT(String BSSID, String SSID, float distance,String RSSI, long time, float xCoordinate, float yCoordinate, float zCoordinate, float distanceStdDevM, int numAttemptedMeasurements, int numSuccessfulMeasurements, long rangingTimestampMillis) {
         this.BSSID = BSSID;
         this.SSID = SSID;
         this.distance = distance;
         this.RSSI = RSSI;
         this.time = time;
-        this.trueDistance = trueDistance;
         this.xCoordinate = xCoordinate;
         this.yCoordinate = yCoordinate;
         this.zCoordinate = zCoordinate;
@@ -45,7 +43,6 @@ public class DataRTT  implements Serializable {
         result.put("distance", distance);
         result.put("RSSI", RSSI);
         result.put("time", time);
-        result.put("trueDistance", trueDistance);
         result.put("xCoordinate", xCoordinate);
         result.put("yCoordinate", yCoordinate);
         result.put("zCoordinate", zCoordinate);

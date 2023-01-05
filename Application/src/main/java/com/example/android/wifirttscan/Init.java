@@ -8,12 +8,14 @@ import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import java.io.File;
 
 public class Init extends AppCompatActivity {
     private EditText timeValue;
     private EditText timeValueB;
+    private TextView config;
 
     private Button next;
     @Override
@@ -22,7 +24,11 @@ public class Init extends AppCompatActivity {
         setContentView(R.layout.activity_init);
         timeValue = findViewById(R.id.time_value);
         timeValueB = findViewById(R.id.time_between);
+        config= findViewById(R.id.configuration_path);
 
+        File file = new File(Environment.getExternalStorageDirectory(), "/WiFiRTT/configuration.json");
+
+        config.setText(file.getAbsolutePath());
         next = findViewById(R.id.next_button);
         next.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -1,0 +1,53 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 28
+    defaultConfig {
+        applicationId "de.plinzen.android.rttmanager"
+        minSdkVersion 28
+        targetSdkVersion 28
+        versionCode 100
+        versionName "1.0.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    signingConfigs {
+        development {
+            storeFile file("../development.jks")
+            storePassword "development"
+            keyAlias "development"
+            keyPassword "development"
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.development
+        }
+
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation "com.android.support:appcompat-v7:$supportLibVersion"
+    implementation "com.android.support:design:$supportLibVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibVersion"
+    implementation "com.android.support:cardview-v7:$supportLibVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation 'com.jakewharton.timber:timber:4.7.1'
+    implementation 'com.jakewharton:butterknife:8.8.1'
+    implementation 'com.google.dagger:dagger:2.16'
+    implementation 'javax.annotation:jsr250-api:1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.1.2'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.16'
+}

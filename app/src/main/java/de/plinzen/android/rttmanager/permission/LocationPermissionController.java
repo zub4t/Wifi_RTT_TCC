@@ -33,7 +33,14 @@ public class LocationPermissionController {
     public void requestLocationPermission(final Activity activity, final View snackbarContainer) {
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission.ACCESS_COARSE_LOCATION) ||
                 ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission
-                        .ACCESS_FINE_LOCATION)) {
+                        .ACCESS_FINE_LOCATION)
+                ||
+                ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission
+                        .READ_EXTERNAL_STORAGE)
+                ||
+                ActivityCompat.shouldShowRequestPermissionRationale(activity, Manifest.permission
+                        .WRITE_EXTERNAL_STORAGE)
+        ) {
             Snackbar.make(snackbarContainer, R.string.permission_location_description, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, view -> requestPermissions(activity)).show();
         } else {
@@ -43,7 +50,7 @@ public class LocationPermissionController {
 
     private void requestPermissions(final Activity activity) {
         ActivityCompat.requestPermissions(activity,
-                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION},
+                new String[]{Manifest.permission.ACCESS_COARSE_LOCATION, Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.WRITE_EXTERNAL_STORAGE, },
                 REQUEST_LOCATION_PERMISSION);
     }
 

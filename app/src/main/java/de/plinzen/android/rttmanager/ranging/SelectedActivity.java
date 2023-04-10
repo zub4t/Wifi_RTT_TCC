@@ -32,7 +32,7 @@ public class SelectedActivity extends AppCompatActivity {
 
     private static final String EXTRA_WIFI_NETWORK = "WIFI_NETWORK";
 
-
+    private static final int STORAGE_PERMISSION_REQUEST_CODE = 200;
     @BindView(R.id.logView)
     TextView logView;
     @BindView(R.id.startButton)
@@ -94,6 +94,7 @@ public class SelectedActivity extends AppCompatActivity {
     }
 
     private void onStartButtonClicked() {
+        FileUtil.TAG = FileUtil.getNextExpFileName();
         logView.setText("");
         for (ScanResult scanResult : MainActivity.set.values()) {
             rangingDisposables.add(rangingManager.startRanging(scanResult)

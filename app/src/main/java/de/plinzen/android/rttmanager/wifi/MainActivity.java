@@ -27,7 +27,9 @@ import android.widget.TextView;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.TreeSet;
 
 import butterknife.BindView;
@@ -59,7 +61,8 @@ public class MainActivity extends AppCompatActivity {
         return locationEnabled != Settings.Secure.LOCATION_MODE_OFF;
     }
 
-    public static Set<ScanResult> set = new HashSet<>();
+    public static Map<String,ScanResult> set = new TreeMap<>();
+
     @BindView(R.id.coordinator)
     CoordinatorLayout coordinatorLayout;
     @BindView(R.id.fab)
@@ -127,6 +130,21 @@ public class MainActivity extends AppCompatActivity {
         wifiNetworkReceiver = new ScanWifiNetworkReceiver();
         rttManager = (WifiRttManager) getSystemService(Context.WIFI_RTT_RANGING_SERVICE);
         initUI();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
     @Override
@@ -155,14 +173,13 @@ public class MainActivity extends AppCompatActivity {
         wifiNetworkAdapter = new WifiNetworkAdapter(getApplicationContext());
         listWifiNetworks.setAdapter(wifiNetworkAdapter);
         wifiNetworkAdapter.setClickListener((view, wifiNetworkResult) -> {
-            Log.d("CUSTOM", "AQIU");
             CheckBox ch = (CheckBox) view;
-            if (set.contains(wifiNetworkResult)) {
+            if (set.get(wifiNetworkResult.BSSID)!=null) {
                 ch.setChecked(false);
-                set.remove(wifiNetworkResult);
+                set.remove(wifiNetworkResult.BSSID);
             } else {
                 ch.setChecked(true);
-                set.add(wifiNetworkResult);
+                set.put(wifiNetworkResult.BSSID,wifiNetworkResult);
             }
         });
         lblSearchHint.setVisibility(View.VISIBLE);

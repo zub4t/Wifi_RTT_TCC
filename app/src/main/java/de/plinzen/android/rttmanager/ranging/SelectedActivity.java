@@ -95,7 +95,7 @@ public class SelectedActivity extends AppCompatActivity {
 
     private void onStartButtonClicked() {
         logView.setText("");
-        for (ScanResult scanResult : MainActivity.set) {
+        for (ScanResult scanResult : MainActivity.set.values()) {
             rangingDisposables.add(rangingManager.startRanging(scanResult)
                     .repeat()
                     .subscribeOn(Schedulers.io())

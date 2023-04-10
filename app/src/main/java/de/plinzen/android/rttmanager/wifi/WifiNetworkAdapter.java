@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -24,7 +25,7 @@ class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHol
     private static final String TAG = "CUSTOM";
 
     interface OnClickListener {
-        void onItemClicked(final View view ,final ScanResult wifiNetwork);
+        void onItemClicked(final View view, final ScanResult wifiNetwork);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
@@ -63,6 +64,7 @@ class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHol
         }
         final ScanResult result = wifiNetworks.get(position);
         holder.checkBox.setText(result.SSID + "/" + result.BSSID);
+        holder.checkBox.setChecked(MainActivity.set.get(result.BSSID) != null ? true : false);
         bind(holder.wifi_network_item, result, clickListener);
     }
 
@@ -87,24 +89,28 @@ class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHol
         final List<String> filtered = new ArrayList<>(wifiNetworks.size());
 
         for (ScanResult result : wifiNetworks) {
-            String id = String.format("%s/%s",result.SSID,result.BSSID);
-            if (!duplicates.contains(id)){
+            String id = String.format("%s/%s", result.SSID, result.BSSID);
+            if (!duplicates.contains(id)) {
                 duplicates.add(id);
                 filtered.add(id);
             }
 
         }
+
         Collections.sort(filtered);
-        for(String item :  filtered ){
+        for (String item : filtered) {
             ScanResult result = wifiNetworks.stream()
                     .filter(r -> item.equals(String.format("%s/%s", r.SSID, r.BSSID)))
                     .findFirst()
                     .orElse(null);
 
             if (result != null) {
+
                 filteredResults.add(result);
+
             }
         }
+        Toast.makeText(context, "Found "+filteredResults.size()+" APs", Toast.LENGTH_SHORT).show();
         this.wifiNetworks = filteredResults;
         notifyDataSetChanged();
     }
@@ -112,6 +118,6 @@ class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHol
 
     private void bind(final View wifiNetworkItem, final ScanResult result, final OnClickListener listener) {
         Log.d(TAG, "bind: ");
-        wifiNetworkItem.setOnClickListener(view -> listener.onItemClicked(wifiNetworkItem.findViewById(R.id.checkBox),result));
+        wifiNetworkItem.setOnClickListener(view -> listener.onItemClicked(wifiNetworkItem.findViewById(R.id.checkBox), result));
     }
 }

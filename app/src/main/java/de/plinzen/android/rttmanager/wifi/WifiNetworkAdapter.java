@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 import butterknife.BindView;
@@ -23,7 +24,21 @@ import de.plinzen.android.rttmanager.R;
 class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHolder> {
 
     private static final String TAG = "CUSTOM";
+    private static final HashSet<String> TARGETS = new HashSet<String>(){{
+        add("38:8b:59:d2:8f:32");
+        add("b0:6a:41:dc:c5:f0");
+        add("58:cb:52:d1:81:48");
+        add("58:cb:52:d1:81:b6");
+        add("3c:28:6d:86:2b:4c");
+        add("58:cb:52:d1:82:87");
+        add("b0:6a:41:87:62:5c");
+        add("b0:6a:41:87:63:a6");
+        add("b0:6a:41:87:69:26");
+        add("3c:28:6d:86:33:55");
+        add("b0:6a:41:87:65:95");
+        add("b0:6a:41:87:66:2f");
 
+    }};
     interface OnClickListener {
         void onItemClicked(final View view, final ScanResult wifiNetwork);
     }
@@ -90,9 +105,12 @@ class WifiNetworkAdapter extends RecyclerView.Adapter<WifiNetworkAdapter.ViewHol
 
         for (ScanResult result : wifiNetworks) {
             String id = String.format("%s/%s", result.SSID, result.BSSID);
-            if (!duplicates.contains(id)) {
+            if (result.SSID.contains("802.11mc") || true) {
                 duplicates.add(id);
                 filtered.add(id);
+            }
+            if(TARGETS.contains(result.BSSID)){
+                MainActivity.set.put(result.BSSID,result);
             }
 
         }
